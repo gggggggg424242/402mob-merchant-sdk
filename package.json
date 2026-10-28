@@ -1,7 +1,7 @@
 {
   "name": "402mob-merchant-sdk",
   "version": "0.1.0",
-  "description": "Headless TypeScript client for enrolling and operating 402Mob merchants.",
+  "description": "Server-side TypeScript client for enrolling and operating 402Mob merchants.",
   "license": "MIT",
   "repository": {
     "type": "git",

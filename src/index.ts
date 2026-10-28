@@ -201,7 +201,7 @@ export class MerchantApiError extends Error {
  */
 export class MerchantClient {
   private readonly baseUrl: string;
-  private readonly apiKey: string | undefined;
+  readonly #apiKey: string | undefined;
   private readonly fetcher: typeof globalThis.fetch;
 
   constructor(options: MerchantClientOptions = {}) {
@@ -213,8 +213,12 @@ export class MerchantClient {
     if (parsed.protocol === "http:" && !["localhost", "127.0.0.1", "[::1]"].includes(parsed.hostname)) {
       throw new TypeError("HTTP is allowed only for loopback development URLs; use HTTPS for remote services.");
     }
-    this.baseUrl = parsed.origin;
-    this.apiKey = options.apiKey;
+    if (parsed.username || parsed.password || parsed.search || parsed.hash) {
+      throw new TypeError("baseUrl must not contain credentials, a query, or a fragment.");
+    }
+    const pathPrefix = parsed.pathname.replace(/\/+$/, "");
+    this.baseUrl = `${parsed.origin}${pathPrefix}`;
+    this.#apiKey = options.apiKey;
     this.fetcher = options.fetch ?? globalThis.fetch;
     if (typeof this.fetcher !== "function") {
       throw new TypeError("A Fetch API implementation is required.");
@@ -317,15 +321,15 @@ export class MerchantClient {
   }
 
   private async request<T>(method: string, path: string, body?: unknown, authenticated = false): Promise<T> {
-    if (authenticated && !this.apiKey) {
+    if (authenticated && !this.#apiKey) {
       throw new Error("This request requires a merchant API key. Use client.withApiKey(apiKey).");
     }
 
     const headers: Record<string, string> = { Accept: "application/json" };
     if (body !== undefined) headers["Content-Type"] = "application/json";
-    if (authenticated && this.apiKey) headers.Authorization = `Bearer ${this.apiKey}`;
+    if (authenticated && this.#apiKey) headers.Authorization = `Bearer ${this.#apiKey}`;
 
-    const response = await this.fetcher(new URL(path, `${this.baseUrl}/`), {
+    const response = await this.fetcher(new URL(`${this.baseUrl}${path}`), {
       method,
       headers,
       ...(body !== undefined ? { body: JSON.stringify(body) } : {}),

@@ -1,8 +1,10 @@
 # 402Mob Merchant SDK
 
-An open-source, dependency-free TypeScript client for enrolling and operating a 402Mob merchant from a server, agent runtime, or wallet-enabled application.
+An open-source, dependency-free TypeScript client for enrolling and operating a 402Mob merchant from a Node.js server or agent runtime.
 
 It wraps the existing HTTP merchant API. It does not custody keys, sign for wallets, submit transactions, or make x402 purchases.
+
+The SDK is intended for server-side and agent-runtime use. `evidence.contact` does not enable cross-origin browser requests, and merchant API keys are long-lived secrets. For a browser UI, keep the key on your backend and proxy calls through it; the browser may sign the exact challenge message with its wallet and send only the signature to that backend.
 
 ## Install
 
@@ -93,13 +95,12 @@ Create offer prices as decimal strings (for example `"0.02"`) to avoid floating-
 
 ## Safety and behavior
 
-- The base URL defaults to `https://evidence.contact`; use `baseUrl` to target a compatible local service.
+- The base URL defaults to `https://evidence.contact`; use `baseUrl` to target a compatible service. Remote URLs must use HTTPS. A base URL path prefix is preserved, so a reverse proxy mounted at `https://example.com/402mob` receives requests below `/402mob/v1/...`. Credentials, query strings, and fragments are rejected. Browser frontends cannot call `evidence.contact` directly because its API does not send CORS headers.
 - Wallet signing and transaction submission are injected callbacks. The SDK has no private-key parameter.
 - Enrollment and rotation return a long-lived API key once. Save it in your own secret manager. The SDK holds it only in memory when passed to `withApiKey`.
-- The SDK does not persist credentials or automatically retry requests. After an enrollment or rotation response is lost, check the merchant state and follow the API's recovery guidance before repeating wallet actions.
+- The SDK does not persist credentials or automatically retry requests. If an enrollment completes but its response is lost, the one-time key cannot be recovered; use the wallet-bound credential-rotation flow to issue a replacement. Do not enroll the same wallet again. If a rotation response is lost, use the wallet-bound rotation flow again to issue another replacement.
 - Merchant management creates prepared artifacts. It does not register dynamic callbacks or execute seller code.
 - `MerchantApiError` exposes the HTTP `status` and API `code`; errors never include request headers or wallet secrets.
-- If an enrollment or rotation completes but its response is lost, the one-time key cannot be retrieved again. Use the wallet-bound credential-rotation flow to issue a replacement; do not attempt a second enrollment for that wallet.
 
 ## Development
 

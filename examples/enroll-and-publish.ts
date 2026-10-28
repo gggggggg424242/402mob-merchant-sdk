@@ -21,7 +21,7 @@ export interface SecretStore {
 export async function enrollAndPublish(input: {
   wallet: MessageSigningWallet;
   secretStore: SecretStore;
-}): Promise<{ offer: MerchantOffer; publicClient: MerchantClient }> {
+}): Promise<{ offer: MerchantOffer; merchantClient: MerchantClient }> {
   const publicClient = new MerchantClient();
   const enrollment = await publicClient.enrollWithSignature({
     wallet: input.wallet.address,
@@ -39,5 +39,5 @@ export async function enrollAndPublish(input: {
     result: { summary: "Prepared by the seller agent" },
   });
 
-  return { offer, publicClient };
+  return { offer, merchantClient };
 }
