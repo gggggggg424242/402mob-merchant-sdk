@@ -107,7 +107,10 @@ Create offer prices as decimal strings (for example `"0.02"`) to avoid floating-
 ```sh
 npm install
 npm run build
+npm test
 ```
+
+The SDK tests use mocked HTTP responses and do not contact `evidence.contact` or submit wallet transactions.
 
 See [`examples/enroll-and-publish.ts`](./examples/enroll-and-publish.ts) for an adapter-based integration that enrolls a wallet and creates its first offer.
 
