@@ -1,0 +1,35 @@
+{
+  "name": "402mob-merchant-sdk",
+  "version": "0.1.0",
+  "description": "Headless TypeScript client for enrolling and operating 402Mob merchants.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gggggggg424242/402mob-merchant-sdk.git"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist",
+    "examples",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}
