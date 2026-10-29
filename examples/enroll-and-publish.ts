@@ -3,7 +3,7 @@ import {
   type EvmAddress,
   type EvmSignature,
   type MerchantOffer,
-} from "../src/index.js";
+} from "../dist/index.js";
 
 export interface MessageSigningWallet {
   address: EvmAddress;
@@ -21,6 +21,7 @@ export interface SecretStore {
 export async function enrollAndPublish(input: {
   wallet: MessageSigningWallet;
   secretStore: SecretStore;
+  discoverable?: boolean;
 }): Promise<{ offer: MerchantOffer; merchantClient: MerchantClient }> {
   const publicClient = new MerchantClient();
   const enrollment = await publicClient.enrollWithSignature({
@@ -38,6 +39,7 @@ export async function enrollAndPublish(input: {
     contentType: "application/json",
     result: { summary: "Prepared by the seller agent" },
   });
+  if (input.discoverable) await merchantClient.setDiscoverable(true);
 
   return { offer, merchantClient };
 }
